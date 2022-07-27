@@ -19,3 +19,6 @@ classifiers = [
     "Framework :: IPython",
     "Topic :: Utilities",
 ]
+
+[project.urls]
+"Homepage" = "https://github.com/pSpitzner/ipy_dict_hierarchy"
