@@ -1,15 +1,18 @@
-# +
-#
+# ------------------------------------------------------------------------------ #
+# @Author:        F. Paul Spitzner
+# @Email:         paul.spitzner@ds.mpg.de
+# @Created:       2022-07-26 20:10:12
+# @Last Modified: 2022-07-27 12:54:01
+# ------------------------------------------------------------------------------ #
+# This implements tab completion for nested dictionaries (for now only benedict)
+# https://github.com/fabiocaccamo/python-benedict
+# ------------------------------------------------------------------------------ #
 # This file is reworked from h5py, a low-level Python interface to the HDF5 library.
 #
-# Originally contributed by Darren Dale
-#
+# Originally contributed by Darren Dale under BSD license.
 # Copyright (C) 2009 Darren Dale
-#
 # http://h5py.org
-# License: BSD  (See LICENSE.txt for full license)
-#
-# -
+# ------------------------------------------------------------------------------ #
 
 
 import re
@@ -34,8 +37,9 @@ except ImportError:
 
 _re_item_match = re.compile(r"""(?:.*\=)?(.*)\[(?P<s>['|"])(?!.*(?P=s))(.*)$""")
 
+
 def _completer(self, event):
-    """ Completer function to be loaded into IPython """
+    """Completer function to be loaded into IPython"""
     try:
         base, item = _re_item_match.split(event.line)[1:4:2]
     except ValueError:
@@ -106,21 +110,6 @@ def _completer(self, event):
     return [i for i in items if i[: len(item)] == item]
 
 
-def _load_ipython_extension(ipython=None):
-    """ Load completer function into IPython """
-    if ipython is None:
-        try:
-            # >=ipython-1.0
-            from IPython import get_ipython
-        except ImportError:
-            try:
-                # support >=ipython-0.11, <ipython-1.0
-                from IPython.core.ipapi import get as get_ipython
-            except ImportError:
-                # support <ipython-0.11
-                from IPython.ipapi import get as get_ipython
-        ipython = get_ipython()
-    ipython.set_hook("complete_command", _completer, re_key=r"(?:.*\=)?(.+?)\[")
 
 
 def enable_tab_completion(ipython):
@@ -134,18 +123,22 @@ def enable_tab_completion(ipython):
     if not "benedict" in sys.modules:
         return
 
-    if 'IPython' in sys.modules:
+    if "IPython" in sys.modules:
         ip_running = False
         try:
             from IPython.core.interactiveshell import InteractiveShell
+
             ip_running = InteractiveShell.initialized()
         except ImportError:
             # support <ipython-0.11
             from IPython import ipapi as _ipapi
+
             ip_running = _ipapi.get() is not None
         except Exception:
             pass
         if ip_running:
-            return _load_ipython_extension(ipython)
+            return ipython.set_hook(
+                "complete_command", _completer, re_key=r"(?:.*\=)?(.+?)\["
+            )
 
-    raise RuntimeError('Completer must be enabled in active ipython session')
+    raise RuntimeError("Completer must be enabled in active ipython session")

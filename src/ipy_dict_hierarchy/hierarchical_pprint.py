@@ -2,11 +2,12 @@
 # @Author:        F. Paul Spitzner
 # @Email:         paul.spitzner@ds.mpg.de
 # @Created:       2022-07-26 20:45:38
-# @Last Modified: 2022-07-27 10:36:45
+# @Last Modified: 2022-07-27 12:59:20
 # ------------------------------------------------------------------------------ #
-# tweaked way to print nested dictionaries.
+# this provides a pretty print for nested dictionaries.
 # ------------------------------------------------------------------------------ #
 
+# TODO: check for numpy, then again, when has it ever not been installed?
 from numbers import Number
 from numpy import ndarray as np_ndarray
 from numpy import bytes_ as np_bytes_
@@ -20,18 +21,18 @@ except ImportError:
     _h5_installed = False
 
 
-def view(obj, p=None, cycle=False):
+def plain_text(obj, p=None, cycle=False):
     """
     See https://ipython.readthedocs.io/en/stable/api/generated/IPython.lib.pretty.html
 
     # Example
     ```
-    from pprint_dict import view
+    from .hierarchical_pprint import plain_text
     formatter = get_ipython().display_formatter.formatters["text/plain"]
-    formatter.for_type(dict, view)
-    formatter.for_type_by_name('benedict.dicts', 'benedict', view)
-    formatter.for_type_by_name('h5py._hl.files', 'File', view)
-    formatter.for_type_by_name('h5py._hl.group', 'Group', view)
+    formatter.for_type(dict, plain_text)
+    formatter.for_type_by_name('benedict.dicts', 'benedict', plain_text)
+    formatter.for_type_by_name('h5py._hl.files', 'File', plain_text)
+    formatter.for_type_by_name('h5py._hl.group', 'Group', plain_text)
     ```
 
     Then, printing a nested dict should look like this:
@@ -89,6 +90,7 @@ def _recursive_tree(d, t=None, depth=0):
     depth : int, current depth
     max_els : int, maximum number of elements per hierarchy level
     """
+
     if t is None:
         # these are all flat lists of the same length
         # scs are split characters
@@ -97,6 +99,10 @@ def _recursive_tree(d, t=None, depth=0):
         t["prev_pc"] = ""
 
     for vdx, var in enumerate(d.keys()):
+        # lets have a hard-coded limit so that this cannot blow up too much
+        if len(t["pcs"]) > 5_000:
+            return t
+
         if vdx < len(d.keys()) - 1:
             sc = "├── "
             pc = "│   "
