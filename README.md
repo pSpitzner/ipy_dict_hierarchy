@@ -25,11 +25,11 @@ dict(
 
 ```
 <class 'dict'>
-├── lorem ................................................................ str  ipsum
+├── lorem .................................... str  ipsum
 └── first_level
     └── second_level
-        ├── some_entry ................................................. float  8.15
-        └── another_entry ............................................... list  (5)
+        ├── some_entry ..................... float  8.15
+        └── another_entry ................... list  (5)
 ```
 
 ## Install
@@ -39,3 +39,14 @@ Optional, but recommended
 pip install python-benedict
 pip install h5py
 ```
+
+Required
+```
+pip install ipy_dict_hierarchy
+```
+
+In jupyter or ipython, to load manually
+```
+%load_ext ipy_dict_hierarchy
+```
+

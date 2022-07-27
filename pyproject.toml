@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "ipy_dict_hierarchy"
+name = "dict-hierarchy"
 version = "0.0.1"
 authors = [
   { name="F. Paul Spitzner", email="paul.spitzner@ds.mpg.de" },
@@ -19,6 +19,3 @@ classifiers = [
     "Framework :: IPython",
     "Topic :: Utilities",
 ]
-
-[project.urls]
-"Homepage" = "https://github.com/pSpitzner/ipy_dict_hierarchy"
