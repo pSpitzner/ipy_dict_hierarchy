@@ -2,7 +2,7 @@
 # @Author:        F. Paul Spitzner
 # @Email:         paul.spitzner@ds.mpg.de
 # @Created:       2022-07-26 20:10:12
-# @Last Modified: 2022-08-02 22:38:45
+# @Last Modified: 2022-08-02 22:46:43
 # ------------------------------------------------------------------------------ #
 # This implements tab completion for nested dictionaries
 #
@@ -117,6 +117,9 @@ def _completer(self, event) -> list[str]:
             last_pos = pos
             cls_str = "']"
             sep_str = "']['"
+            # maybe we have to update the prefix again :/
+            if prefix == '["':
+                prefix = "['"
             break
 
     # get the instance of the dict-like object
