@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "dict-hierarchy"
+name = "ipy_dict_hierarchy"
 version = "0.0.1"
 authors = [
   { name="F. Paul Spitzner", email="paul.spitzner@ds.mpg.de" },

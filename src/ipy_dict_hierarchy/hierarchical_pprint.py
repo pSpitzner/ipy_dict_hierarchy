@@ -2,7 +2,7 @@
 # @Author:        F. Paul Spitzner
 # @Email:         paul.spitzner@ds.mpg.de
 # @Created:       2022-07-26 20:45:38
-# @Last Modified: 2022-07-27 12:59:20
+# @Last Modified: 2022-08-02 14:00:52
 # ------------------------------------------------------------------------------ #
 # this provides a pretty print for nested dictionaries.
 # ------------------------------------------------------------------------------ #
@@ -15,6 +15,7 @@ from numpy import bytes_ as np_bytes_
 try:
     from h5py import Dataset as h5py_Dataset
     from h5py import Group as h5py_Group
+    from h5py import File as h5py_File
 
     _h5_installed = True
 except ImportError:
@@ -114,7 +115,11 @@ def _recursive_tree(d, t=None, depth=0):
         t["scs"].append(sc)
         t["varname"].append(var)
 
-        if isinstance(d[var], dict) or _h5_installed and isinstance(d[var], h5py_Group):
+        if isinstance(d[var], dict) or (
+            _h5_installed
+            # also expand hdf5 groups but not references to files
+            and (isinstance(d[var], h5py_Group) and not isinstance(d[var], h5py_File))
+        ):
             # get all content of the dict, while incrementing the padding `pc`
             t["vartype"].append("")
             t["varval"].append("")

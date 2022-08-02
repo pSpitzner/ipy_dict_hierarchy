@@ -2,7 +2,7 @@
 # @Author:        F. Paul Spitzner
 # @Email:         paul.spitzner@ds.mpg.de
 # @Created:       2022-07-26 20:10:12
-# @Last Modified: 2022-07-27 12:54:01
+# @Last Modified: 2022-08-02 13:43:34
 # ------------------------------------------------------------------------------ #
 # This implements tab completion for nested dictionaries (for now only benedict)
 # https://github.com/fabiocaccamo/python-benedict
@@ -26,13 +26,7 @@ except ImportError:
     # we again check below
     pass
 
-try:
-    from IPython.core.error import TryNext
-except ImportError:
-    try:
-        from IPython import TryNext
-    except ImportError:
-        from IPython.ipapi import TryNext
+from IPython.core.error import TryNext
 
 
 _re_item_match = re.compile(r"""(?:.*\=)?(.*)\[(?P<s>['|"])(?!.*(?P=s))(.*)$""")
@@ -43,7 +37,7 @@ def _completer(self, event):
     try:
         base, item = _re_item_match.split(event.line)[1:4:2]
     except ValueError:
-        return []
+        raise TryNext
 
     # `base` should now contain all chars in the current line up to the
     # benedict instance where tab completeion was invoked
