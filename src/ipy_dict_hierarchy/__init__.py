@@ -1,6 +1,6 @@
-# from .tab_completion import enable_tab_completion
-from .tab_completion_2 import enable_tab_completion
 from .hierarchical_pprint import plain_text
+from .tab_completion_dict import enable_tab_completion as enable_tab_dict
+from .tab_completion_benedict import enable_tab_completion as enable_tab_benedict
 
 def load_ipython_extension(ipython=None):
 
@@ -8,7 +8,9 @@ def load_ipython_extension(ipython=None):
         from IPython import get_ipython
         ipython = get_ipython()
 
-    enable_tab_completion(ipython)
+    enable_tab_benedict(ipython)
+    enable_tab_dict(ipython)
+
 
     # plain text formatting
     formatter = ipython.display_formatter.formatters["text/plain"]
