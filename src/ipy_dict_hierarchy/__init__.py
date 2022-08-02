@@ -1,5 +1,5 @@
-from .tab_completion import enable_tab_completion
-# from .tab_completion_2 import enable_tab_completion
+# from .tab_completion import enable_tab_completion
+from .tab_completion_2 import enable_tab_completion
 from .hierarchical_pprint import plain_text
 
 def load_ipython_extension(ipython=None):
