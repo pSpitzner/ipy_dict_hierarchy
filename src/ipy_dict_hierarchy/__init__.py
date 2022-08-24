@@ -1,4 +1,4 @@
-from .hierarchical_pprint import plain_text
+from .hierarchical_pprint import plain_text, html_repr
 from .tab_completion_dict import enable_tab_completion as enable_tab_dict
 from .tab_completion_benedict import enable_tab_completion as enable_tab_benedict
 
@@ -18,3 +18,9 @@ def load_ipython_extension(ipython=None):
     formatter.for_type_by_name('benedict.dicts', 'benedict', plain_text)
     formatter.for_type_by_name('h5py._hl.files', 'File', plain_text)
     formatter.for_type_by_name('h5py._hl.group', 'Group', plain_text)
+
+    # html formatting
+    formatter = ipython.display_formatter.formatters["text/html"]
+    formatter.for_type(dict, html_repr)
+    formatter.for_type_by_name('benedict.dicts', 'benedict', html_repr)
+

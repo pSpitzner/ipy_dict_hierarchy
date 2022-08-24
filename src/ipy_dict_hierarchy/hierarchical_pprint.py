@@ -2,7 +2,7 @@
 # @Author:        F. Paul Spitzner
 # @Email:         paul.spitzner@ds.mpg.de
 # @Created:       2022-07-26 20:45:38
-# @Last Modified: 2022-08-02 14:00:52
+# @Last Modified: 2022-08-24 17:33:05
 # ------------------------------------------------------------------------------ #
 # this provides a pretty print for nested dictionaries.
 # ------------------------------------------------------------------------------ #
@@ -25,6 +25,9 @@ except ImportError:
 def plain_text(obj, p=None, cycle=False):
     """
     See https://ipython.readthedocs.io/en/stable/api/generated/IPython.lib.pretty.html
+
+    Quote:
+    The cycle parameter is True if pretty detected a cycle. You have to react to that or the result is an infinite loop. p.text() just adds non breaking text to the output, p.breakable() either adds a whitespace or breaks here. If you pass it an argument it's used instead of the default space. p.pretty prettyprints another object using the pretty print method.
 
     # Example
     ```
@@ -172,3 +175,179 @@ def _recursive_tree(d, t=None, depth=0):
                 t["varval"].append("")
 
     return t
+
+
+css = """
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dtree {
+    margin: .5rem;
+}
+.dtree div {
+  position: relative;
+}
+
+.fold-symbol {
+    margin-right: .4rem;
+    margin-left: -.2rem;
+}
+
+.dtree .dict {
+  margin-left: 1rem;
+  margin-bottom: .8rem;
+  margin-right: .3rem;
+  padding-left: .1rem;
+#   background-color: #88888811;
+}
+
+.dtree .key {
+  padding-left: .2rem;
+}
+
+.dtree .key:before {
+  content: "";
+  position: absolute;
+  border-left: 1.5px solid #ddd;
+  border-bottom: 1.5px solid #ddd;
+  top: -.25rem;
+  left: -1rem;
+  width: .8rem;
+  height: .9rem;
+}
+.dtree .key:after {
+  content: "";
+  position: absolute;
+  border-left: 1.5px solid #ddd;
+  border-top: 1.5px solid #ddd;
+  top: .65rem;
+  left: -1rem;
+  width: .8rem;
+  height: 100%;
+}
+.dtree .key:last-child:after {
+  display: none;
+}
+
+.dtree .key div {
+  display: block;
+#   border-top: 1.5px solid #ddd;
+#   border-right: 1.5px solid #ddd;
+  color: #888;
+
+  text-decoration: none;
+}
+"""
+
+def html_repr(obj):
+    """
+    it seems the html repr does not pass p or cycle...
+    """
+
+    p = []
+    p.append(f"<style>{css}</style>")
+
+    p.append(f'<div class="dtree">')
+    _html_recursive(obj, "", p)
+    p.append(f"</div>")
+
+    return "".join(p)
+
+
+
+def _html_recursive(obj, obj_name, p):
+
+    # all keys are wrapped
+    p.append(f'<div class="key">')
+
+    try:
+        keys = obj.keys()
+        # if it has keys, we can iterate it and create a new sublist
+        _html_dict(obj, obj_name, p)
+        p.append(f'<div class="dict">')
+        if len(keys) > 0:
+            for key in keys:
+                _html_recursive(obj[key], key, p)
+        p.append(f"</div>")
+
+    except AttributeError:
+        # object is not a dict
+        _html_nondict(obj, obj_name, p)
+
+    # key wrap
+    p.append(f"</div>")
+
+
+def _html_dict(obj, obj_name, p):
+    """
+    format the header row of a dict
+    """
+    # the unfold icon
+    # p.append(f'<span class="fold-symbol">◀︎</span>')
+    p.append(f'<span class="fold-symbol">▼</span>')
+    # p.append(f'<span class="fold-symbol">▶︎</span>')
+
+    # the name
+    p.append(f"<span>{obj_name}</span>")
+
+    # the number of keys in the sublist
+    p.append(f"<span>({len(obj.keys())})</span>")
+
+
+def _html_nondict(obj, obj_name, p):
+    """
+    helper to create html for a row that is not a dict
+    """
+    # they dict key
+    p.append(f"<span>{obj_name}</span>")
+
+    # extract type and certain variables
+    p.append(f"<span>{obj.__class__.__name__}</span>")
+
+    # open a span for the value / tip
+    p.append(f"<span>")
+
+    # check different data types,
+    # number
+    if isinstance(obj, Number):
+        p.append(str(obj))
+
+    # numpy byte strings
+    elif isinstance(obj, np_bytes_):
+        string = obj.decode("UTF-8").replace("\n", " ")
+        if len(string) > 14:
+            string = f"{string:.11s}..."
+        p.append(string)
+
+    # base strings
+    elif isinstance(obj, str):
+        string = obj.replace("\n", " ")
+        if len(string) > 14:
+            string = f"{string:.11s}..."
+        p.append(string)
+
+    # numpy arrays, print shape
+    elif isinstance(obj, np_ndarray):
+        p.append(f"{obj.shape}")
+
+    # list, print length
+    elif isinstance(obj, list):
+        p.append(f"({len(obj)})")
+
+    # hdf5 datset
+    elif _h5_installed and isinstance(obj, h5py_Dataset):
+        try:
+            # this will throw an exception if file is closed
+            obj.file
+            p.append(f"{obj.shape}")
+        except ValueError:
+            p.append(f"(file closed)")
+
+    # unknown
+    else:
+        p.append("")
+
+    p.append(f"</span>")
