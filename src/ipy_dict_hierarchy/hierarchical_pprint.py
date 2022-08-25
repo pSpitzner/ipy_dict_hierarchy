@@ -2,7 +2,7 @@
 # @Author:        F. Paul Spitzner
 # @Email:         paul.spitzner@ds.mpg.de
 # @Created:       2022-07-26 20:45:38
-# @Last Modified: 2022-08-24 17:33:05
+# @Last Modified: 2022-08-25 09:49:56
 # ------------------------------------------------------------------------------ #
 # this provides a pretty print for nested dictionaries.
 # ------------------------------------------------------------------------------ #
@@ -196,6 +196,11 @@ css = """
     margin-left: -.2rem;
 }
 
+.fold-symbol:checked ~ .dict,
+.fold-symbol:checked ~ .key {
+  display: None;
+}
+
 .dtree .dict {
   margin-left: 1rem;
   margin-bottom: .8rem;
@@ -287,8 +292,10 @@ def _html_dict(obj, obj_name, p):
     """
     # the unfold icon
     # p.append(f'<span class="fold-symbol">◀︎</span>')
-    p.append(f'<span class="fold-symbol">▼</span>')
+    # p.append(f'<span class="fold-symbol">▼</span>')
     # p.append(f'<span class="fold-symbol">▶︎</span>')
+    p.append(f"<input id='asdf' class='fold-symbol' "
+        f"type='checkbox' >")
 
     # the name
     p.append(f"<span>{obj_name}</span>")
